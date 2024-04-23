@@ -1,0 +1,80 @@
+packer {
+  required_plugins {
+    vagrant = {
+      source  = "github.com/hashicorp/vagrant"
+      version = "~> 1.1.0"
+    }
+  }
+}
+
+variable "box_dir" {
+  type    = string
+  default = "../box/vbox-x64"
+}
+
+variable "cpus" {
+  type    = string
+  default = "1"
+}
+
+variable "disable_breakpoint" {
+  type    = bool
+  default = true
+}
+
+variable "headless" {
+  type    = bool
+  default = true
+}
+
+variable "iso_dir" {
+  type    = string
+  default = "../iso"
+}
+
+variable "iso_name" {
+  type    = string
+  default = "alpine-installed-v0.1.ova"
+}
+
+variable "iso_url" {
+  type    = string
+  default = "https://www.dropbox.com/scl/fi/b6nxkdyf5533qlh48fawe/alpine-installed-v0.1.ova?rlkey=zm661vy1k9o9c3ex24wbbk6w2&dl=1"
+}
+
+variable "output_dir" {
+  type    = string
+  default = "../vms/vbox-x64"
+}
+
+variable "root_dir" {
+  type    = string
+  default = ".."
+}
+
+variable "version" {
+  type    = string
+  default = "0.0.1pre"
+}
+
+source "virtualbox-ovf" "boot" {
+  boot_wait                = "-1s"
+  guest_additions_mode     = "disable"
+  headless                 = var.headless
+  output_directory         = var.output_dir
+  shutdown_command         = "poweroff"
+  ssh_password             = "vagrant"
+  ssh_timeout              = "10000s"
+  ssh_username             = "root"
+  virtualbox_version_file  = ""
+  vm_name                  = source.name
+}
+
+build {
+  name = "build"
+
+  source "virtualbox-ovf.boot" {
+    checksum  = "1a769799e9de1df50a101dce80239c38478c5dc4b8e38375f5bdbdb6f4df0754"
+    source_path = var.iso_url
+    name          = "alpine318"
+  }

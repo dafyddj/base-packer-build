@@ -1,0 +1,116 @@
+name: Test & release `build.yml` workflow
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: 14 15 * * *
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+
+jobs:
+  pre-commit:
+    name: Run `pre-commit`
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # renovate: datasource=github-releases depName=actions/python-versions extractVersion=^(?<version>\S+)-\d+$
+      PYTHON_VERSION: 3.12.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: pre-commit/action@v3.0.1
+  gbt:
+    name: Get build types
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      build-types: ${{ steps.get-build-types.outputs.build-types }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: get-build-types
+        run: |
+          BUILDS=$(jq -cR 'split(" ")' builds)
+          OUTPUT="build-types=$BUILDS"
+          echo "Setting '$OUTPUT'"
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+  gov:
+    name: Get OS versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      os-versions: ${{ steps.get-os-versions.outputs.os-versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: get-os-versions
+        run: |
+          VERSIONS=$(jq -cR 'split(" ")' os_vers)
+          OUTPUT="os-versions=$VERSIONS"
+          echo "Setting '$OUTPUT'"
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+  run-workflow:
+    needs:
+      - gbt
+      - gov
+      - pre-commit
+    uses: ./.github/workflows/libbuild.yml
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        build-os-version: ${{ fromJSON(needs.gov.outputs.os-versions) }}
+        build-runner: [macos-12, buildjet-2vcpu-ubuntu-2204, virtualbox]
+        build-type: ${{ fromJSON(needs.gbt.outputs.build-types) }}
+        exclude:
+          - build-type: qemu-x64
+            build-runner: virtualbox
+          - build-type: vbox-x64
+            build-runner: macos-12
+          - build-type: vbox-x64
+            build-runner: buildjet-2vcpu-ubuntu-2204
+          - build-type: vbox-x64
+            build-runner: ubuntu-latest
+    with:
+      build-os-version: ${{ matrix.build-os-version }}
+      build-runner: ${{ matrix.build-runner }}
+      build-type: ${{ matrix.build-type }}
+      timeout-minutes: 10
+      upload-box: false
+#  release:
+#    name: Release
+#    needs:
+#      - run-workflow
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Run `semantic-release`
+#        uses: codfish/semantic-release-action@v2
+#        id: sem-rel
+#        with:
+#          branches: |
+#            ["main"]
+#          plugins: |
+#            [ "@semantic-release/commit-analyzer",
+#              "@semantic-release/release-notes-generator",
+#              "@semantic-release/github"
+#            ]
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Update branch for major version
+#        if: steps.sem-rel.outputs.new-release-published == 'true'
+#        run: git push
+#             https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+#             HEAD:refs/heads/v${{steps.sem-rel.outputs.release-major}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Update Healthchecks.io
+#        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+#        run: curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HC_UUID}
+#        env:
+#          HC_UUID: ${{ secrets.HC_UUID }}
