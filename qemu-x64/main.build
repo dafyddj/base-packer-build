@@ -1,0 +1,97 @@
+packer {
+  required_plugins {
+    qemu = {
+      source  = "github.com/hashicorp/qemu"
+      version = "~> 1.0"
+    }
+    vagrant = {
+      source  = "github.com/hashicorp/vagrant"
+      version = "~> 1.1.0"
+    }
+  }
+}
+
+variable "accelerator" {
+  type    = string
+  default = "hvf"
+}
+
+variable "box_dir" {
+  type    = string
+  default = "../box/qemu"
+}
+
+variable "cpus" {
+  type    = string
+  default = "1"
+}
+
+variable "disable_breakpoint" {
+  type    = bool
+  default = true
+}
+
+variable "headless" {
+  type    = bool
+  default = true
+}
+
+variable "iso_dir" {
+  type    = string
+  default = "../iso"
+}
+
+variable "iso_name" {
+  type    = string
+  default = "alpine-installed-v0.6.qcow2"
+}
+
+variable "iso_url" {
+  type    = string
+  default = "https://www.dropbox.com/scl/fi/iikkahq3srgr54krsnby2/alpine-installed-v0.6.qcow2?rlkey=w5112g2uh63da3rbduxbmyvmw&dl=1"
+}
+
+variable "output_dir" {
+  type    = string
+  default = "../vms/qemu"
+}
+
+variable "root_dir" {
+  type    = string
+  default = ".."
+}
+
+variable "version" {
+  type    = string
+  default = "0.0.1pre"
+}
+
+source "qemu" "boot" {
+  accelerator              = var.accelerator
+  boot_wait                = "-1s"
+  cpus                     = var.cpus
+  disk_image               = true
+  disk_size                = "1024"
+  headless                 = var.headless
+  memory                   = "512"
+  output_directory         = var.output_dir
+  shutdown_command         = "poweroff"
+  ssh_password             = "vagrant"
+  ssh_timeout              = "10000s"
+  ssh_username             = "root"
+  use_default_display      = true
+  vm_name                  = source.name
+}
+
+build {
+  name = "build"
+
+  source "qemu.boot" {
+    iso_checksum  = "d6034a1fd80bb5cadc4e3136b6c2d90cb2bc96da8982bdc499b8d53cdca552dc"
+    iso_urls      = [
+      "${var.root_dir}/iso/${var.iso_name}",
+      "${var.iso_dir}/${var.iso_name}",
+      var.iso_url,
+    ]
+    name          = "alpine318"
+  }
