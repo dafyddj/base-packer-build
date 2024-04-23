@@ -20,11 +20,11 @@ jobs:
       # renovate: datasource=github-releases depName=actions/python-versions extractVersion=^(?<version>\S+)-\d+$
       PYTHON_VERSION: 3.12.3
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - uses: pre-commit/action@v3.0.1
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
   gbt:
     name: Get build types
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
     outputs:
       build-types: ${{ steps.get-build-types.outputs.build-types }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
       - id: get-build-types
         run: |
           BUILDS=$(jq -cR 'split(" ")' builds)
@@ -46,7 +46,7 @@ jobs:
     outputs:
       os-versions: ${{ steps.get-os-versions.outputs.os-versions }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
       - id: get-os-versions
         run: |
           VERSIONS=$(jq -cR 'split(" ")' os_vers)
