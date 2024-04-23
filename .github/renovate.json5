@@ -9,7 +9,7 @@
     "config:recommended",
     ":enablePreCommit",
     ":semanticCommitTypeAll(fix)",
-    "helpers:pinGitHubActionDigests",
+    "helpers:pinGitHubActionDigestsToSemver",
     "regexManagers:githubActionsVersions",
   ],
   "packageRules": [
