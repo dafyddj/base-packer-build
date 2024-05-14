@@ -20,7 +20,7 @@ jobs:
       should-run: ${{ steps.action.outputs.should-run }}
     steps:
       - id: action
-        uses: techneg-it/should-workflow-run@v1
+        uses: techneg-it/should-workflow-run@v1.0.0
   pre-commit:
     name: Run `pre-commit`
     needs: should-run
