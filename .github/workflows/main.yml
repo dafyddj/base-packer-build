@@ -12,8 +12,19 @@ concurrency:
   cancel-in-progress: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
 
 jobs:
+  should-run:
+    name: Should run
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should-run: ${{ steps.action.outputs.should-run }}
+    steps:
+      - id: action
+        uses: techneg-it/should-workflow-run@v1
   pre-commit:
     name: Run `pre-commit`
+    needs: should-run
+    if: fromJSON(needs.should-run.outputs.should-run)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -27,6 +38,8 @@ jobs:
       - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
   gbt:
     name: Get build types
+    needs: should-run
+    if: fromJSON(needs.should-run.outputs.should-run)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -41,6 +54,8 @@ jobs:
           echo "$OUTPUT" >> $GITHUB_OUTPUT
   gov:
     name: Get OS versions
+    needs: should-run
+    if: fromJSON(needs.should-run.outputs.should-run)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
