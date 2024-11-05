@@ -53,14 +53,18 @@ jobs:
             sudo apt --yes install vagrant $TECHNEG_VAGRANT_PROVIDER
           elif [ "$kernel_name" == "Darwin" ]; then
             brew update
-            brew install make
+            brew install make qemu vagrant
           fi
       - name: Prepare environment
         if: startsWith(inputs.build-type, 'qemu')
         run: |
+          # Needed until a fix for Gem dependencies is released (Vagrant 2.4.3?)
+          echo VAGRANT_DISABLE_STRICT_DEPENDENCY_ENFORCEMENT=1 >> $GITHUB_ENV
           kernel_name=$(uname -s)
           if [ "$kernel_name" == "Linux" ]; then
             echo PKR_VAR_accelerator=kvm >> $GITHUB_ENV
+          elif [ "$kernel_name" == "Darwin" ]; then
+            : # No action needed for Darwin
           fi
       - name: Run Packer
         id: packer
