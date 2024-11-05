@@ -12,6 +12,20 @@
     "helpers:pinGitHubActionDigestsToSemver",
     "regexManagers:githubActionsVersions",
   ],
+  "customDatasources": {
+    "omnitruck": {
+      "defaultRegistryUrlTemplate": "https://omnitruck.chef.io/stable/{{packageName}}/versions/latest",
+      "transformTemplates": [
+        "{\"releases\": [{ \"version\": $string($) }] }",
+      ],
+    },
+    "python-versions": {
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/actions/python-versions/refs/heads/main/versions-manifest.json",
+      "transformTemplates": [
+        "{\"releases\": $ }",
+      ],
+    },
+  },
   "packageRules": [
     {
       "matchPackageNames": ["actions/python-versions"],
