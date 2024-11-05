@@ -19,6 +19,12 @@
         "{\"releases\": [{ \"version\": $string($) }] }",
       ],
     },
+    "python-versions": {
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/actions/python-versions/refs/heads/main/versions-manifest.json",
+      "transformTemplates": [
+        "{\"releases\": $ }",
+      ],
+    },
   },
   "packageRules": [
     {
