@@ -2,11 +2,13 @@ packer {
   required_plugins {
     qemu = {
       source  = "github.com/hashicorp/qemu"
-      version = "~> 1.0"
+      # renovate: depName=hashicorp/qemu packageName=hashicorp/packer-plugin-qemu
+      version = "1.0.10"
     }
     vagrant = {
       source  = "github.com/hashicorp/vagrant"
-      version = "~> 1.1.0"
+      # renovate: depName=hashicorp/vagrant packageName=hashicorp/packer-plugin-vagrant
+      version = "1.1.0"
     }
   }
 }
