@@ -26,6 +26,16 @@
       ],
     },
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "fileMatch": ["\\.build$"],
+      "matchStrings": [
+        "# renovate: depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+version = \"(?<currentValue>.+?)\"\\s",
+      ],
+    },
+  ],
   "packageRules": [
     {
       "matchPackageNames": ["actions/python-versions"],
