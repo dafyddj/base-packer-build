@@ -8,7 +8,7 @@ packer {
     vagrant = {
       source  = "github.com/hashicorp/vagrant"
       # renovate: depName=hashicorp/vagrant packageName=hashicorp/packer-plugin-vagrant
-      version = "1.1.5"
+      version = "1.1.6"
     }
   }
 }
