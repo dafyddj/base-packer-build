@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
     'github>techneg-it/.github',
     'github>techneg-it/.github:check-jsonschema',
     'github>techneg-it/.github:copier-new',
@@ -11,24 +11,25 @@
     ':automergeDigest',
     ':automergeStableNonMajor',
   ],
-  "customDatasources": {
-    "omnitruck": {
-      "defaultRegistryUrlTemplate": "https://omnitruck.chef.io/stable/{{packageName}}/versions/latest",
-      "transformTemplates": [
-        "{\"releases\": [{ \"version\": $string($) }] }",
+  customDatasources: {
+    omnitruck: {
+      defaultRegistryUrlTemplate: 'https://omnitruck.chef.io/stable/{{packageName}}/versions/latest',
+      transformTemplates: [
+        '{"releases": [{ "version": $string($) }] }',
       ],
     },
   },
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "fileMatch": ["\\.build$"],
-      "matchStrings": [
-        "# renovate: depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+version = \"(?<currentValue>.+?)\"\\s",
+      customType: 'regex',
+      datasourceTemplate: 'github-releases',
+      managerFilePatterns: [
+        '**/*.build',
+      ],
+      matchStrings: [
+        '# renovate: depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+version = "(?<currentValue>.+?)"\\s',
       ],
     },
   ],
-  "packageRules": [
-  ],
+  packageRules: [],
 }
