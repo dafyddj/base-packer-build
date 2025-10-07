@@ -24,7 +24,7 @@
       customType: 'regex',
       datasourceTemplate: 'github-releases',
       managerFilePatterns: [
-        '/\\.build$/',
+        '**/*.build',
       ],
       matchStrings: [
         '# renovate: depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+version = "(?<currentValue>.+?)"\\s',
