@@ -7,10 +7,14 @@
     'github>techneg-it/.github:github-actions',
     'github>techneg-it/.github:pre-commit',
     'github>techneg-it/.github:python-versions',
+    'github>techneg-it/.github:update-chef-workstation',
     'github>techneg-it/.github:weekly',
     ':automergeDigest',
     ':automergeStableNonMajor',
   ],
+  bundler: {
+    enabled: false,
+  },
   customDatasources: {
     omnitruck: {
       defaultRegistryUrlTemplate: 'https://omnitruck.chef.io/stable/{{packageName}}/versions/latest',
