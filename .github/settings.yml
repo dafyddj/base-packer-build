@@ -30,6 +30,8 @@ rulesets:
       - type: required_status_checks
         parameters:
           required_status_checks:
-            - context: run-workflow
+            - context: Collect results
+              integration_id: 15368
+            - context: Release
               integration_id: 15368
           strict_required_status_checks_policy: false
