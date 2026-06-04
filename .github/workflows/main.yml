@@ -96,36 +96,32 @@ jobs:
       build-type: ${{ matrix.build-type }}
       timeout-minutes: 10
       upload-box: false
-#  release:
-#    name: Release
-#    needs:
-#      - run-workflow
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 5
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: Run `semantic-release`
-#        uses: codfish/semantic-release-action@v2
-#        id: sem-rel
-#        with:
-#          branches: |
-#            ["main"]
-#          plugins: |
-#            [ "@semantic-release/commit-analyzer",
-#              "@semantic-release/release-notes-generator",
-#              "@semantic-release/github"
-#            ]
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Update branch for major version
-#        if: steps.sem-rel.outputs.new-release-published == 'true'
-#        run: git push
-#             https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-#             HEAD:refs/heads/v${{steps.sem-rel.outputs.release-major}}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Update Healthchecks.io
-#        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-#        run: curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HC_UUID}
-#        env:
-#          HC_UUID: ${{ secrets.HC_UUID }}
+  results:
+    name: Collect results
+    permissions:
+      checks: read
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: poseidon/wait-for-status-checks@899c768d191b56eef585c18f8558da19e1f3e707 # v0.6.0
+        with:
+          ignore: Collect results
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "::notice ::Workflow success!"
+  release:
+    name: Release
+    needs:
+      - results
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    steps:
+      - name: Report success
+        run: echo "It works!"
+      - name: Update Healthchecks.io
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: |
+          if [ -n "${HC_UUID}" ]; then
+            curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HC_UUID}
+          fi
+        env:
+          HC_UUID: ${{ secrets.HC_UUID }}
