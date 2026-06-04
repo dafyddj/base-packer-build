@@ -6,16 +6,12 @@
 
 source ENV.fetch('PROXY_RUBYGEMSORG', 'https://rubygems.org')
 
-# Install the `inspec` gem using `git` because versions after `4.22.22`
-# suppress diff output; this version fixes this for our uses.
-# rubocop:disable Layout/LineLength
-gem 'inspec', git: 'https://gitlab.com/saltstack-formulas/infrastructure/inspec', branch: 'ssf'
-# rubocop:enable Layout/LineLength
+gem 'inspec', '5.24.7'
 
 gem 'kitchen-inspec', '3.1.0'
 gem 'kitchen-salt', '0.7.2'
 gem 'kitchen-vagrant', '2.2.1'
 
-gem 'net-ssh', '7.3.0'
+gem 'net-ssh', '7.3.2'
 
-gem 'test-kitchen', '3.9.1'
+gem 'test-kitchen', '4.0.0'
