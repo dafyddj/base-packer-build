@@ -35,5 +35,12 @@
       ],
     },
   ],
-  packageRules: [],
+  packageRules: [
+    {
+      // Update Ruby (for Test Kitchen) manually to keep in sync with Chef Workstation
+      matchDepNames: ['ruby'],
+      matchDepTypes: ['uses-with'],
+      enabled: false,
+    },
+  ],
 }
